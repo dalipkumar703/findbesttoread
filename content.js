@@ -12,37 +12,92 @@ let findarr= []
     console.log("arr",findarr)
     const filterarr = findarr.flat().filter((data)=>data !== '' && !data.match(/[0-9]/))
     console.log(filterarr)
-    const result = []
-    Promise.all([fetch('https://rainforestwrapper.netlify.app/.netlify/functions/api/replacer').then(res=>res.json()),fetch('https://rainforestwrapper.netlify.app/.netlify/functions/api/omitter').then(res=>res.json()) ]).then(data=>{
+    const result = { relevantList: []}
+    Promise.all([fetch(`http://localhost:8888/.netlify/functions/api/replacer?url=${url}`).then(res=>res.json()),fetch(`http://localhost:8888/.netlify/functions/api/omitter?url=${url}`).then(res=>res.json()), fetch(`http://localhost:8888/.netlify/functions/api/suggestion?url=${url}`).then(res=>res.json()) ]).then(data=>{
         const replacer = data[0]
         const omitter = data[1]
+        const suggestedArr = data[2]
         const omitterKeys = omitter[0].omitterKeys
         console.log("replacer",replacer)
-        console.log("replacer",omitter)
+        console.log("omm",omitter)
+        //pages urls
         document.querySelectorAll('a').forEach((item)=>{
+            let link = ''
+            if (item.href.includes('#')|| item.href.includes('?')){
+                
+             link = item.href.substr(0, item.href.indexOf('#') > - 1 ? item.href.indexOf('#') :item.href.indexOf('?'))
+
+            } else {
+             link = item.href
+            }
+        
+            if(link === window.location.href){
+                return;
+            }
             // if(item.pathname.includes(filterarr)){
             // res.push(item.href)   
             // }
-           
+            let count = 0;
             let isExist = false
+            //spiltted url keys
             filterarr.forEach(key=>{
+                // const suggestedArr = []
                 console.log("item",item.pathname)
-                if (omitterKeys.includes(key)){
+                if (omitterKeys.includes(key?.toLowerCase())){
                     return;
                 }
                 const replacerArr = Object.keys(replacer[0])
-                if (Array.isArray(replacerArr) && replacerArr.includes(key)){
+                if (Array.isArray(replacerArr) && replacerArr.includes(key?.toLowerCase())){
                     const newKey = replacer[key]
-                    const id = item.pathname.indexOf(newKey)
-                    result.push(item.href)
+                    const id = item.pathname.includes(newKey)
+                    if(id){
+                    count++;
+                        //url to display to user
+                    // result.push(item.href)
                     isExist = true
-                } else if(item.pathname.includes(key) && !isExist){
-                    const id = item.pathname.indexOf(key)
-                    result.push(item.href)
-                    isExist = true
+                    }
+                 
+                } else if(item.pathname.includes(key?.toLowerCase())){
+                    count++;
+                    // result.push(item.href)
+                } else {
+                    const suggestionExistArr =    suggestedArr.filter((suggestion)=>{
+                        if (item.pathname.includes(suggestion)){
+                                return true;
+                        } else {
+                            return false
+                        }
+                    })
+                    if(suggestionExistArr.length > 1){
+                        count++;
+                        // result.push(item.href)
+                    }
                 }
             })
+            if(count>0){
+                // let link = ''
+                // if (item.href.includes('#')|| item.href.includes('?')){
+                    
+                //  link = item.href.substr(0, item.href.indexOf('#') > - 1 ? item.href.indexOf('#') :item.href.indexOf('?'))
+
+                // } else {
+                //  link = item.href
+                // }
+
+                const isExist = result.relevantList.filter((matchItem)=> matchItem.link === link)
+                if(!isExist.length){
+                    if(item.href.includes('#')|| item.href.includes('?')){
+                        console.log("new",link)
+                       result.relevantList.push({link: link, matchingChar:count})
+                    } else {
+                       result.relevantList.push({link: item.href, matchingChar:count})
+                    }
+                   
+
+                }
+            }
         })
+
         console.log('data',result)
     })
 
