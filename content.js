@@ -13,7 +13,9 @@ let findarr= []
     const filterarr = findarr.flat().filter((data)=>data !== '' && !data.match(/[0-9]/))
     console.log(filterarr)
     const result = { relevantList: []}
-    Promise.all([fetch(`http://localhost:8888/.netlify/functions/api/replacer?url=${url}`).then(res=>res.json()),fetch(`http://localhost:8888/.netlify/functions/api/omitter?url=${url}`).then(res=>res.json()), fetch(`http://localhost:8888/.netlify/functions/api/suggestion?url=${url}`).then(res=>res.json()) ]).then(data=>{
+    Promise.all([fetch(`https://rainforestwrapper.netlify.app/.netlify/functions/api/replacer?url=${url}`).then(res=>res.json()),
+    fetch(`https://rainforestwrapper.netlify.app/.netlify/functions/api/omitter?url=${url}`).then(res=>res.json()),
+    fetch(`https://rainforestwrapper.netlify.app/.netlify/functions/api/suggestion?url=${url}`).then(res=>res.json()) ]).then(data=>{
         const replacer = data[0]
         const omitter = data[1]
         const suggestedArr = data[2]
@@ -61,7 +63,10 @@ let findarr= []
                     count++;
                     // result.push(item.href)
                 } else {
-                    const suggestionExistArr =    suggestedArr.filter((suggestion)=>{
+                    const suggestionObj = suggestedArr.suggestionsKey
+                    const filterSuggestionArr = suggestionObj[key] || []
+                    console.log("suggestion arr",filterSuggestionArr)
+                    const suggestionExistArr =    filterSuggestionArr.filter((suggestion)=>{
                         if (item.pathname.includes(suggestion)){
                                 return true;
                         } else {

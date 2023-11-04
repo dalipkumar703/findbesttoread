@@ -23,7 +23,8 @@ const setDOMInfo = info => {
         // window.open(item,'_blank','noopener')
       });
       const textArr = item.link.split('/')
-      const textDesc = textArr.pop() ? textArr.pop().split('-').join(' ') :textArr[textArr.length - 1].split('-').join(' ')
+      const textDesc = textArr[textArr.length - 1] ? textArr[textArr.length - 1].split('-').join(' ') :textArr[textArr.length - 2].split('-').join(' ')
+      console.log("text",textDesc)
       const upperCaseTextDesc = textDesc.charAt(0).toUpperCase() + textDesc.slice(1);
       const linkDesc = document.createTextNode(upperCaseTextDesc);
         // add the text node to the newly created div
