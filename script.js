@@ -6,13 +6,16 @@ const setDOMInfo = info => {
       });
 
       const newDiv = document.createElement("div");
+      newDiv.class= "mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
       filterList.reverse().forEach((item)=>{
         // const newContent = document.createTextNode(item);
         const newContent = document.createElement('a');
-      const linkText = document.createTextNode(item.link);
+      const linkText = document.createTextNode("Read More");
       newContent.appendChild(linkText);
-      newContent.title = item;
-      newContent.href = item;
+      newContent.title = item.link;
+      newContent.class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      newContent.href = item.link;
+      newContent.style = 'color:blue'
       newContent.addEventListener('click', function(e) {
         // window.open(item,'_tab')
         e.preventDefault()
